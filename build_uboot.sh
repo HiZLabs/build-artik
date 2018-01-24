@@ -12,6 +12,9 @@ print_usage()
 
 parse_options()
 {
+	DO_CLEAN=false
+	DO_RECONFIG=false
+
 	for opt in "$@"
 	do
 		case "$opt" in
@@ -21,15 +24,26 @@ parse_options()
 			-b)
 				TARGET_BOARD="$2"
 				shift ;;
+			--clean)
+				DO_CLEAN=true
+				;;
+			--reconfig)
+				DO_RECONFIG=true
+				;;
 		esac
 	done
 }
 
 build()
 {
-	make ARCH=arm distclean
-	make ARCH=arm distclean O=$UBOOT_DIR/output
-	make ARCH=arm $UBOOT_DEFCONFIG O=$UBOOT_DIR/output
+	if $DO_CLEAN; then
+		make ARCH=arm distclean
+		make ARCH=arm distclean O=$UBOOT_DIR/output
+	fi
+
+	if $DO_CLEAN || $DO_RECONFIG; then
+		make ARCH=arm $UBOOT_DEFCONFIG O=$UBOOT_DIR/output
+	fi	
 	make ARCH=arm EXTRAVERSION="-$BUILD_VERSION" ${UBOOT_BUILD_OPT} -j$JOBS O=$UBOOT_DIR/output
 }
 

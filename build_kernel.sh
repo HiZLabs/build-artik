@@ -17,6 +17,8 @@ print_usage()
 
 parse_options()
 {
+	DO_CLEAN=false
+	DO_RECONFIG=false
 	for opt in "$@"
 	do
 		case "$opt" in
@@ -26,14 +28,25 @@ parse_options()
 			-b)
 				TARGET_BOARD="$2"
 				shift ;;
+			--clean)
+				DO_CLEAN=true
+				;;
+			--reconfig)
+				DO_RECONFIG=true
+				;;
 		esac
 	done
 }
 
 build()
 {
-	make distclean
-	make $KERNEL_DEFCONFIG
+	if $DO_CLEAN; then
+		make distclean
+	fi
+
+	if $DO_CLEAN || $DO_RECONFIG; then
+		make $KERNEL_DEFCONFIG
+	fi
 	make $KERNEL_IMAGE -j$JOBS EXTRAVERSION="-$BUILD_VERSION"
 	make $BUILD_DTB EXTRAVERSION="-$BUILD_VERSION"
 	make modules EXTRAVERSION="-$BUILD_VERSION" -j$JOBS

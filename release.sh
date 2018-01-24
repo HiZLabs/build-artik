@@ -17,6 +17,10 @@ DEPLOY=false
 OS_NAME=fedora
 KMS_PREBUILT_DIR=false
 KMS_TARGET_DIR=false
+BUILD_UBOOT_CLEAN_ARG="--clean"
+BUILD_UBOOT_RECONFIG_ARG="--reconfig"
+BUILD_KERNEL_CLEAN_ARG="--clean"
+BUILD_KERNEL_RECONFIG_ARG="--reconfig"
 
 print_usage()
 {
@@ -125,10 +129,34 @@ parse_options()
 			--ubuntu)
 				OS_NAME=ubuntu
 				shift ;;
+			--skip-clean-kernel)
+				BUILD_KERNEL_CLEAN_ARG=""
+				shift ;;
+			--skip-reconfig-kernel)
+				BUILD_KERNEL_CLEAN_ARG=""
+				BUILD_KERNEL_RECONFIG_ARG=""
+				shift ;;
+			--skip-clean-uboot)
+				BUILD_UBOOT_CLEAN_ARG=""
+				shift ;;
+			--skip-reconfig-uboot)
+				BUILD_UBOOT_CLEAN_ARG=""
+				BUILD_UBOOT_RECONFIG_ARG=""
+				shift ;;
 			*)
 				shift ;;
 		esac
 	done
+	if [ ! -z "$BUILD_KERNEL_CLEAN_ARG" ] || [ ! -z "$BUILD_KERNEL_RECONFIG_ARG" ]; then
+		echo Kernel build script args: $BUILD_KERNEL_CLEAN_ARG $BUILD_KERNEL_RECONFIG_ARG
+		echo Enter to continue, Ctrl-C to quit. 
+		read OKAY
+	fi
+	if [ ! -z "$BUILD_UBOOT_CLEAN_ARG" ] || [ ! -z "$BUILD_UBOOT_RECONFIG_ARG" ]; then
+		echo U-Boot build script args: $BUILD_UBOOT_CLEAN_ARG $BUILD_UBOOT_RECONFIG_ARG
+		echo Enter to continue, Ctrl-C to quit. 
+		read OKAY
+	fi
 }
 
 print_not_found()
@@ -250,8 +278,8 @@ gen_artik_release
 if [ "$KMS_PREBUILT_DIR" == "false" ]; then
 
 if [ "$PREBUILT_VBOOT_DIR" == "" ]; then
-	./build_uboot.sh
-	./build_kernel.sh
+	./build_uboot.sh $BUILD_UBOOT_CLEAN_ARG $BUILD_UBOOT_RECONFIG_ARG
+	./build_kernel.sh $BUILD_KERNEL_CLEAN_ARG $BUILD_KERNEL_RECONFIG_ARG
 
 	if $VERIFIED_BOOT ; then
 		if [ "$VBOOT_ITS" == "" ]; then
