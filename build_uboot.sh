@@ -37,6 +37,7 @@ parse_options()
 build()
 {
 	if $DO_CLEAN; then
+		rm -rf $UBOOT_DIR/last_output
 		make ARCH=arm distclean
 		make ARCH=arm distclean O=$UBOOT_DIR/output
 	fi
@@ -44,6 +45,10 @@ build()
 	if $DO_CLEAN || $DO_RECONFIG; then
 		make ARCH=arm $UBOOT_DEFCONFIG O=$UBOOT_DIR/output
 		make ARCH=arm EXTRAVERSION="-$BUILD_VERSION" ${UBOOT_BUILD_OPT} -j$JOBS O=$UBOOT_DIR/output
+		rm -rf $UBOOT_DIR/last_output
+		cp -pr $UBOOT_DIR/output $UBOOT_DIR/last_output
+	else
+		cp -prv $UBOOT_DIR/last_output $UBOOT_DIR/output
 	fi
 }
 
