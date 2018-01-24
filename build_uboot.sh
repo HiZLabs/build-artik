@@ -43,8 +43,8 @@ build()
 
 	if $DO_CLEAN || $DO_RECONFIG; then
 		make ARCH=arm $UBOOT_DEFCONFIG O=$UBOOT_DIR/output
-	fi	
-	make ARCH=arm EXTRAVERSION="-$BUILD_VERSION" ${UBOOT_BUILD_OPT} -j$JOBS O=$UBOOT_DIR/output
+		make ARCH=arm EXTRAVERSION="-$BUILD_VERSION" ${UBOOT_BUILD_OPT} -j$JOBS O=$UBOOT_DIR/output
+	fi
 }
 
 gen_envs()
