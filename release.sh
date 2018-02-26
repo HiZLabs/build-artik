@@ -16,6 +16,10 @@ PREBUILT_REPO_OPT=
 DEPLOY=false
 OS_NAME=fedora
 
+if [ -z "$UBOOT_ONLY" ]; then
+UBOOT_ONLY=false
+fi
+
 print_usage()
 {
 	echo "-h/--help         Show help options"
@@ -214,6 +218,11 @@ fi
 
 ./mksdboot.sh
 
+
+	if $UBOOT_ONLY ; then
+		exit 0;
+	fi
+
 ./mkbootimg.sh
 
 if $FULL_BUILD ; then
@@ -267,6 +276,8 @@ if $DEPLOY; then
 fi
 
 ./mkrootfs_image.sh $TARGET_DIR
+
+./mkmender.sh $MICROSD_IMAGE
 
 if [ -e $PREBUILT_DIR/flash_all_by_fastboot.sh ]; then
 	cp $PREBUILT_DIR/flash_all_by_fastboot.sh $TARGET_DIR

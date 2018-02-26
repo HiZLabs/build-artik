@@ -38,6 +38,7 @@ s5p6818_sdboot_gen()
 	cp $PREBUILT_DIR/fip-loader-*.img $TARGET_DIR
 	cp $PREBUILT_DIR/fip-secure.img $TARGET_DIR
 	cp $PREBUILT_DIR/partmap_emmc.txt $TARGET_DIR
+	cp $PREBUILT_DIR/partmap_mender.txt $TARGET_DIR
 	if [ "$OTA" == "true" ]; then
 		cp $PREBUILT_DIR/partmap_emmc_ota.txt $TARGET_DIR/partmap_emmc.txt
 		cp $PREBUILT_DIR/flag.img $TARGET_DIR

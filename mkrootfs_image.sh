@@ -6,14 +6,14 @@ if [ "$TARGET_DIR" == "" ]; then
 	TARGET_DIR=$1
 fi
 
-ROOTFS_MAX=3096
+ROOTFS_MAX=1798
 
 test -e $TARGET_DIR/rootfs.tar.gz || exit 0
 test -e $TARGET_DIR/artik_release || exit 0
 
 dd if=/dev/zero of=$TARGET_DIR/rootfs.img bs=1M count=$ROOTFS_MAX
 ROOTFS_SIZE=`gzip -l $TARGET_DIR/rootfs.tar.gz | grep "rootfs.tar" | awk '{ print $2 }'`
-ROOTFS_GAIN=300
+ROOTFS_GAIN=100
 ROOTFS_SZ=$((ROOTFS_SIZE >> 20))
 TOTAL_SZ=`expr $ROOTFS_SZ + $ROOTFS_GAIN`
 
@@ -23,11 +23,16 @@ sudo mount -o loop $TARGET_DIR/rootfs.img $TARGET_DIR/rootfs
 sudo tar xf $TARGET_DIR/rootfs.tar.gz -C $TARGET_DIR/rootfs
 sudo cp $TARGET_DIR/artik_release $TARGET_DIR/rootfs/etc/
 sudo touch $TARGET_DIR/rootfs/.need_resize
+sudo mkdir -p $TARGET_DIR/rootfs/boot
+sudo mkdir -p $TARGET_DIR/rootfs/lib/modules
+sudo cp $TARGET_DIR/Image $TARGET_DIR/rootfs/boot
+sudo cp $TARGET_DIR/*.dtb $TARGET_DIR/rootfs/boot
+sudo cp -r $TARGET_DIR/modules/lib/modules/* $TARGET_DIR/rootfs/lib/modules
 sync
 
 sudo umount $TARGET_DIR/rootfs
 e2fsck -y -f $TARGET_DIR/rootfs.img
-resize2fs -f $TARGET_DIR/rootfs.img ${TOTAL_SZ}M
+#resize2fs -f $TARGET_DIR/rootfs.img ${TOTAL_SZ}M
 
 rm -rf $TARGET_DIR/rootfs
 
